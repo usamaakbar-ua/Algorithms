@@ -26,3 +26,46 @@ def naive_string_search(long_str, pattern):
 
     return count
 
+
+def kmp_string_search(long: str, pattern: str) -> int:
+
+    count = 0
+
+    prefix_table = compute_prefix_table(pattern)
+
+    i = 0
+    j = 0
+
+    while i < len(long):
+        if long[i] == pattern[j]:
+            i += 1
+            j += 1
+
+        if j == len(pattern):
+            count += 1
+            j = prefix_table[j -1]
+        elif i < len(long) and long[i] != pattern[j]:
+            if j != 0:
+                j = prefix_table[j - 1]
+            else:
+                i += 1
+    return count
+
+
+def compute_prefix_table(pattern: str) -> list:
+    prefix_table = [0] * len(pattern)
+    j = 0
+
+    for i in range(1, len(pattern)):
+        if pattern[i] == pattern[j]:
+            j += 1
+            prefix_table[i] = j
+        else:
+            while j > 0 and pattern[i] != pattern[j]:
+                j = prefix_table[j - 1]
+            if pattern[i] == pattern[j]:
+                j += 1
+                prefix_table[i] = j
+            else:
+                prefix_table[i] = 0
+    return prefix_table
